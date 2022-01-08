@@ -1060,6 +1060,28 @@ translation IS translation\n\
       return;
     }
 
+    if (proto->protoName == "Surface"){
+      out <<
+"PROTO Surface [\n\
+  field   SFVec3f bboxCenter 0 0 0\n\
+  field   SFVec3f bboxSize   -1 -1 -1\n\
+  field   MFNode  visual     [ ]\n\
+  field   MFNode  collision  [ ]\n\
+  eventIn MFNode  addChildren\n\
+  eventIn MFNode  removeChildren\n\
+]\n\
+{\n\
+  Group {\n\
+    addChildren    IS addChildren\n\
+    bboxCenter     IS bboxCenter\n\
+    bboxSize       IS bboxSize\n\
+    children       IS visual\n\
+    removeChildren IS removeChildren\n\
+  }\n\
+}"<< std::endl;
+      return;
+    }
+
     cout << "cannot find writer for " << proto->protoName << " proto node." << endl;
   }
 
