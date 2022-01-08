@@ -1038,6 +1038,28 @@ translation IS translation\n\
       return;
     }
 
+    if (proto->protoName == "SpotLightDevice"){
+      out <<
+"PROTO SpotLightDevice [\n\
+  exposedField SFVec3f attenuation       1 0 0     # [0,)\n\
+  exposedField SFFloat beamWidth         1.570796  # (0,/2]\n\
+  exposedField SFColor color             1 1 1     # [0,1]\n\
+  exposedField SFFloat cutOffAngle       0.785398  # (0,/2]\n\
+  exposedField SFVec3f direction         0 0 -1    # (-,)\n\
+  exposedField SFFloat intensity         1         # [0,1]\n\
+  exposedField SFBool  on                TRUE\n\
+  exposedField SFVec3f    translation 0 0 0\n\
+  exposedField SFRotation rotation    0 0 1 0\n\
+]\n\
+{\n\
+  Transform {\n\
+    translation      IS translation\n\
+    rotation         IS rotation\n\
+  }\n\
+}"<< std::endl;
+      return;
+    }
+
     cout << "cannot find writer for " << proto->protoName << " proto node." << endl;
   }
 
