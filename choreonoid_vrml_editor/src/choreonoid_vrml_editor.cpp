@@ -28,6 +28,17 @@ namespace choreonoid_vrml_editor {
     return nullptr;
   }
 
+  cnoid::VRMLProtoPtr createSurfaceProto(){
+    cnoid::VRMLProtoPtr proto = new cnoid::VRMLProto("Surface");
+    proto->fields["bboxCenter"] = cnoid::SFVec3f::Zero().eval();
+    proto->fields["bboxSize"] = cnoid::SFVec3f::Zero().eval();
+    proto->fields["visual"] = cnoid::MFNode();
+    proto->fields["collision"] = cnoid::MFNode();
+    proto->fields["addChildren"] = cnoid::MFNode();
+    proto->fields["removeChildren"] = cnoid::MFNode();
+    return proto;
+  }
+
 
   cnoid::VRMLProtoPtr createJointProto(){
     cnoid::VRMLProtoPtr proto = new cnoid::VRMLProto("Joint");
@@ -44,6 +55,7 @@ namespace choreonoid_vrml_editor {
     proto->fields["translation"] = cnoid::SFVec3f::Zero().eval();
     proto->fields["ulimit"] = cnoid::MFFloat();
     proto->fields["uvlimit"] = cnoid::MFFloat();
+    proto->fields["climit"] = cnoid::MFFloat();
     proto->fields["jointType"] = cnoid::SFString();
     proto->fields["jointId"] = cnoid::SFInt32(-1);
     proto->fields["jointAxis"] = cnoid::SFVec3f::UnitZ().eval();
@@ -77,6 +89,21 @@ namespace choreonoid_vrml_editor {
     proto->fields["translation"] = cnoid::SFVec3f::Zero().eval();
     proto->fields["rotation"] = cnoid::SFRotation(0,Eigen::Vector3d::UnitZ());
     proto->fields["sensorId"] = cnoid::SFInt32(-1);
+    return proto;
+  }
+
+  cnoid::VRMLProtoPtr createRangeSensorProto(){
+    cnoid::VRMLProtoPtr proto = new cnoid::VRMLProto("RangeSensor");
+    proto->fields["translation"] = cnoid::SFVec3f::Zero().eval();
+    proto->fields["rotation"] = cnoid::SFRotation(0,Eigen::Vector3d::UnitZ());
+    proto->fields["children"] = cnoid::MFNode();
+    proto->fields["sensorId"] = cnoid::SFInt32(-1);
+    proto->fields["scanAngle"] = cnoid::SFFloat(3.14159);
+    proto->fields["scanStep"] = cnoid::SFFloat(0.1);
+    proto->fields["scanRate"] = cnoid::SFFloat(10.0);
+    proto->fields["minDistance"] = cnoid::SFFloat(0.01);
+    proto->fields["maxDistance"] = cnoid::SFFloat(10.0);
+
     return proto;
   }
 

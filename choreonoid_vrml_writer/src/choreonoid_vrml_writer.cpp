@@ -870,6 +870,7 @@ namespace choreonoid_vrml_writer {
   exposedField     SFVec3f      translation         0 0 0\n\
   exposedField     MFFloat      ulimit              []\n\
   exposedField     MFFloat      uvlimit             []\n\
+  exposedField     MFFloat      climit              []\n\
   exposedField     SFString     jointType           \"\"\n\
   exposedField     SFInt32      jointId             -1\n\
   exposedField     SFVec3f      jointAxis           0 0 1\n\
@@ -1026,6 +1027,7 @@ translation IS translation\n\
    exposedField SFFloat    scanAngle         3.14159 #[rad]\n\
    exposedField SFFloat    scanStep          0.1     #[rad]\n\
    exposedField SFFloat    scanRate          10      #[Hz]\n\
+   exposedField SFFloat    minDistance        0.01\n\
    exposedField SFFloat    maxDistance      10\n\
 ]\n\
 {\n\
