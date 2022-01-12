@@ -855,6 +855,7 @@ namespace choreonoid_vrml_writer {
     }
 
     if (proto->protoName == "Joint"){
+      // dhは本来ないが,HRP2にはある
       out <<
 "PROTO Joint [\n\
   exposedField     SFVec3f      center              0 0 0\n\
@@ -871,6 +872,7 @@ namespace choreonoid_vrml_writer {
   exposedField     MFFloat      ulimit              []\n\
   exposedField     MFFloat      uvlimit             []\n\
   exposedField     MFFloat      climit              []\n\
+  exposedField     MFFloat      dh                  [ 0 0 0 0 ]\n\
   exposedField     SFString     jointType           \"\"\n\
   exposedField     SFInt32      jointId             -1\n\
   exposedField     SFVec3f      jointAxis           0 0 1\n\
@@ -1080,6 +1082,135 @@ translation IS translation\n\
     children       IS visual\n\
     removeChildren IS removeChildren\n\
   }\n\
+}"<< std::endl;
+      return;
+    }
+
+    if (proto->protoName == "PressureSensor"){
+      out <<
+"PROTO PressureSensor [\n\
+  exposedField SFFloat maxPressure -1\n\
+  exposedField SFVec3f translation 0 0 0\n\
+  exposedField SFRotation rotation 0 0 1 0\n\
+  exposedField SFInt32 sensorId -1\n\
+]\n\
+{\n\
+  Transform {\n\
+    translation IS translation\n\
+    rotation IS rotation\n\
+  }\n\
+}"<< std::endl;
+      return;
+    }
+
+    if (proto->protoName == "PhotoInterrupter"){
+      out <<
+"PROTO PhotoInterrupter [\n\
+  exposedField SFVec3f transmitter 0 0 0\n\
+  exposedField SFVec3f receiver 0 0 0\n\
+  exposedField SFInt32 sensorId -1\n\
+]\n\
+{\n\
+  Transform{\n\
+    children [\n\
+      Transform{\n\
+        translation IS transmitter\n\
+      }\n\
+      Transform{\n\
+        translation IS receiver\n\
+      }\n\
+    ]\n\
+  }\n\
+}"<< std::endl;
+      return;
+    }
+
+    if (proto->protoName == "CylinderSensorZ"){
+      out <<
+"PROTO CylinderSensorZ [\n\
+    exposedField    SFFloat    maxAngle	      -1\n\
+    exposedField    SFFloat    minAngle        0\n\
+    exposedField    MFNode     children        [ ]\n\
+]\n\
+{\n\
+  Transform{\n\
+    rotation 1 0 0 1.5708\n\
+    children [\n\
+      DEF SensorY CylinderSensor{\n\
+	maxAngle IS maxAngle\n\
+	minAngle IS minAngle\n\
+      }\n\
+      DEF AxisY Transform{\n\
+        children [\n\
+          Transform{\n\
+            rotation 1 0 0 -1.5708\n\
+            children IS children\n\
+          }\n\
+        ]\n\
+      }\n\
+    ]\n\
+  }\n\
+  ROUTE SensorY.rotation_changed TO AxisY.set_rotation\n\
+}"<< std::endl;
+      return;
+    }
+
+    if (proto->protoName == "CylinderSensorY"){
+      out <<
+"PROTO CylinderSensorY [\n\
+    exposedField    SFFloat    maxAngle	      -1\n\
+    exposedField    SFFloat    minAngle        0\n\
+    exposedField    MFNode     children        [ ]\n\
+]\n\
+{\n\
+  Transform{\n\
+    rotation 0 1 0 1.5708\n\
+    children [\n\
+      DEF SensorY CylinderSensor{\n\
+	maxAngle IS maxAngle\n\
+	minAngle IS minAngle\n\
+      }\n\
+      DEF AxisX Transform{\n\
+        children [\n\
+          Transform{\n\
+            rotation 0 1 0 -1.5708\n\
+            children IS children\n\
+          }\n\
+        ]\n\
+      }\n\
+    ]\n\
+  }\n\
+  ROUTE SensorX.rotation_changed TO AxisX.set_rotation\n\
+}"<< std::endl;
+      return;
+    }
+
+    if (proto->protoName == "CylinderSensorX"){
+      out <<
+"PROTO CylinderSensorX [\n\
+    exposedField    SFFloat    maxAngle	      -1\n\
+    exposedField    SFFloat    minAngle        0\n\
+    exposedField    MFNode     children        [ ]\n\
+]\n\
+{\n\
+  Transform{\n\
+    rotation 0 0 1 -1.5708\n\
+    children [\n\
+      DEF SensorZ CylinderSensor{\n\
+	maxAngle IS maxAngle\n\
+	minAngle IS minAngle\n\
+      }\n\
+      DEF AxisZ Transform{\n\
+        children [\n\
+          Transform{\n\
+            rotation 0 0 1 1.5708\n\
+            children IS children\n\
+          }\n\
+        ]\n\
+      }\n\
+    ]\n\
+  }\n\
+  ROUTE SensorZ.rotation_changed TO AxisZ.set_rotation\n\
 }"<< std::endl;
       return;
     }
