@@ -1224,73 +1224,123 @@ translation IS translation\n\
     VRMLProtoInstancePtr instance = static_pointer_cast<VRMLProtoInstance>(node);
     if(beginNode(instance->proto->protoName.c_str(), node, true)){
       for(cnoid::VRMLProtoFieldMap::iterator it = instance->fields.begin(); it != instance->fields.end(); it++){
-        out << indent << it->first << " ";
         switch(it->second.which()){
         case SFBOOL:
-          out << boolstr(get<SFBool>(it->second)) << std::endl;
+	  if(get<SFBool>(instance->proto->fields[it->first]) != get<SFBool>(it->second)){
+	    out << indent << it->first << " ";
+	    out << boolstr(get<SFBool>(it->second)) << std::endl;
+	  }
           break;
         case SFINT32:
-          out << get<SFInt32>(it->second) << std::endl;
+	  if(get<SFInt32>(instance->proto->fields[it->first]) != get<SFInt32>(it->second)){
+	    out << indent << it->first << " ";
+	    out << get<SFInt32>(it->second) << std::endl;
+	  }
           break;
         case SFFLOAT:
-          out << get<SFFloat>(it->second) << std::endl;
+	  if(get<SFFloat>(instance->proto->fields[it->first]) != get<SFFloat>(it->second)){
+	    out << indent << it->first << " ";
+	    out << get<SFFloat>(it->second) << std::endl;
+	  }
           break;
         case SFVEC2F:
-          out << get<SFVec2f>(it->second) << std::endl;
+	  if(get<SFVec2f>(instance->proto->fields[it->first]) != get<SFVec2f>(it->second)){
+	    out << indent << it->first << " ";
+	    out << get<SFVec2f>(it->second) << std::endl;
+	  }
           break;
         case SFVEC3F:
-          out << get<SFVec3f>(it->second) << std::endl;
+	  if(get<SFVec3f>(instance->proto->fields[it->first]) != get<SFVec3f>(it->second)){
+	    out << indent << it->first << " ";
+	    out << get<SFVec3f>(it->second) << std::endl;
+	  }
           break;
         case SFROTATION:
-          out << get<SFRotation>(it->second) << std::endl;
+	  if(get<SFRotation>(instance->proto->fields[it->first]).angle() != get<SFRotation>(it->second).angle() &&
+	     get<SFRotation>(instance->proto->fields[it->first]).axis() != get<SFRotation>(it->second).axis()){
+	    out << indent << it->first << " ";
+	    out << get<SFRotation>(it->second) << std::endl;
+	  }
           break;
         case SFCOLOR:
-          out << get<SFColor>(it->second) << std::endl;
+	  if(get<SFColor>(instance->proto->fields[it->first]) != get<SFColor>(it->second)){
+	    out << indent << it->first << " ";
+	    out << get<SFColor>(it->second) << std::endl;
+	  }
           break;
         case SFTIME:
           cout << "cannot write SFTIME." << endl;
           break;
         case SFSTRING:
-          out << "\"" << get<SFString>(it->second) << "\"" << std::endl;
+	  if(get<SFString>(instance->proto->fields[it->first]) != get<SFString>(it->second)){
+	    out << indent << it->first << " ";
+	    out << "\"" << get<SFString>(it->second) << "\"" << std::endl;
+	  }
           break;
         case SFNODE:
-          if(get<SFNode>(it->second)) writeNodeIter(get<SFNode>(it->second));
-          else out << "NULL" << std::endl;
+	  if(get<SFNode>(instance->proto->fields[it->first]) != get<SFNode>(it->second)) {
+	    out << indent << it->first << " ";
+	    if(get<SFNode>(it->second)) writeNodeIter(get<SFNode>(it->second));
+	    else out << "NULL" << std::endl;
+	  }
           break;
         case SFIMAGE:
           cout << "cannot write SFIMAGE." << endl;
           break;
         case MFINT32:
-          writeMFInt32(get<MFInt32>(it->second));
+	  if(get<MFInt32>(instance->proto->fields[it->first]) != get<MFInt32>(it->second)) {
+	    out << indent << it->first << " ";
+	    writeMFInt32(get<MFInt32>(it->second));
+	  }
           break;
         case MFFLOAT:
-          writeMFValues(get<MFFloat>(it->second), 10);
+	  if(get<MFFloat>(instance->proto->fields[it->first]) != get<MFFloat>(it->second)) {
+	    out << indent << it->first << " ";
+	    writeMFValues(get<MFFloat>(it->second), 10);
+	  }
           break;
         case MFVEC2F:
-          writeMFValues(get<MFVec2f>(it->second), 10);
+	  if(get<MFVec2f>(instance->proto->fields[it->first]) != get<MFVec2f>(it->second)) {
+	    out << indent << it->first << " ";
+	    writeMFValues(get<MFVec2f>(it->second), 10);
+	  }
           break;
         case MFVEC3F:
-          writeMFValues(get<MFVec3f>(it->second), 10);
+	  if(get<MFVec3f>(instance->proto->fields[it->first]) != get<MFVec3f>(it->second)) {
+	    out << indent << it->first << " ";
+	    writeMFValues(get<MFVec3f>(it->second), 10);
+	  }
           break;
         case MFROTATION:
+	  //if(get<MFRotation>(instance->proto->fields[it->first]) != get<MFRotation>(it->second)) { //TODO
+	  out << indent << it->first << " ";
           writeMFValues(get<MFRotation>(it->second), 10);
           break;
         case MFCOLOR:
-          writeMFValues(get<MFColor>(it->second), 10);
+	  if(get<MFColor>(instance->proto->fields[it->first]) != get<MFColor>(it->second)) {
+	    out << indent << it->first << " ";
+	    writeMFValues(get<MFColor>(it->second), 10);
+	  }
           break;
         case MFTIME:
           cout << "cannot write MFTIME." << endl;
           break;
         case MFSTRING:
-          writeMFString(get<MFString>(it->second), 1);
+	  if(get<MFString>(instance->proto->fields[it->first]) != get<MFString>(it->second)) {
+	    out << indent << it->first << " ";
+	    writeMFString(get<MFString>(it->second), 1);
+	  }
           break;
         case MFNODE:
-          out << "[" << std::endl;
-          ++indent;
-          for(int i=0;i<get<MFNode>(it->second).size();i++){
-            writeNodeIter(get<MFNode>(it->second)[i]);
-          }
-          out << --indent << "]" << std::endl;
+	  if(get<MFNode>(instance->proto->fields[it->first]) != get<MFNode>(it->second)) {
+	    out << indent << it->first << " ";
+	    out << "[" << std::endl;
+	    ++indent;
+	    for(int i=0;i<get<MFNode>(it->second).size();i++){
+	      writeNodeIter(get<MFNode>(it->second)[i]);
+	    }
+	    out << --indent << "]" << std::endl;
+	  }
           break;
         default:
           cout << "cannot write " << it->second.which() << endl;
