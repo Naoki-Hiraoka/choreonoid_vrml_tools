@@ -107,4 +107,20 @@ namespace choreonoid_vrml_editor {
     return proto;
   }
 
+  cnoid::VRMLProtoPtr createVisionSensorProto(){
+    cnoid::VRMLProtoPtr proto = new cnoid::VRMLProto("VisionSensor");
+    proto->fields["translation"] = cnoid::SFVec3f::Zero().eval();
+    proto->fields["rotation"] = cnoid::SFRotation(0,Eigen::Vector3d::UnitZ());
+    proto->fields["fieldOfView"] = cnoid::SFFloat(0.785398);
+    proto->fields["frameRate"] = cnoid::SFFloat(30);
+    proto->fields["name"] = cnoid::SFString("");
+    proto->fields["frontClipDistance"] = cnoid::SFFloat(0.01);
+    proto->fields["backClipDistance"] = cnoid::SFFloat(10.0);
+    proto->fields["type"] = cnoid::SFString("NONE");
+    proto->fields["sensorId"] = cnoid::SFInt32(-1);
+    proto->fields["width"] = cnoid::SFInt32(320);
+    proto->fields["height"] = cnoid::SFInt32(240);
+
+    return proto;
+  }
 }

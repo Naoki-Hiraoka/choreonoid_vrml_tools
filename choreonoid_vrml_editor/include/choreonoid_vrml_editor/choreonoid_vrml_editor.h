@@ -12,6 +12,7 @@ namespace choreonoid_vrml_editor {
   cnoid::VRMLProtoPtr createSegmentProto();
   cnoid::VRMLProtoPtr createForceSensorProto();
   cnoid::VRMLProtoPtr createRangeSensorProto();
+  cnoid::VRMLProtoPtr createVisionSensorProto();
 };
 
 #endif
