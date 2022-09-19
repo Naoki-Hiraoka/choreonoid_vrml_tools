@@ -460,7 +460,7 @@ namespace choreonoid_vrml_writer {
   {
     VRMLTransformPtr trans = static_pointer_cast<VRMLTransform>(node);
 
-    if(beginNode("Transform", trans, true)){
+   if(beginNode("Transform", trans, true)){
 
         if (trans->center != SFVec3f::Zero()){
             out << indent << "center " << trans->center << "\n";
@@ -1223,6 +1223,7 @@ translation IS translation\n\
   {
     VRMLProtoInstancePtr instance = static_pointer_cast<VRMLProtoInstance>(node);
     if(beginNode(instance->proto->protoName.c_str(), node, true)){
+      std::vector<cnoid::VRMLProtoFieldMap::iterator> writeLater; // SFNODEとMFNODEは長いので、一番最後に出力しないと読みにくくなる
       for(cnoid::VRMLProtoFieldMap::iterator it = instance->fields.begin(); it != instance->fields.end(); it++){
         switch(it->second.which()){
         case SFBOOL:
@@ -1278,11 +1279,7 @@ translation IS translation\n\
 	  }
           break;
         case SFNODE:
-	  if(get<SFNode>(instance->proto->fields[it->first]) != get<SFNode>(it->second)) {
-	    out << indent << it->first << " ";
-	    if(get<SFNode>(it->second)) writeNodeIter(get<SFNode>(it->second));
-	    else out << "NULL" << std::endl;
-	  }
+          writeLater.push_back(it);
           break;
         case SFIMAGE:
           cout << "cannot write SFIMAGE." << endl;
@@ -1332,18 +1329,36 @@ translation IS translation\n\
 	  }
           break;
         case MFNODE:
-	  if(get<MFNode>(instance->proto->fields[it->first]) != get<MFNode>(it->second)) {
-	    out << indent << it->first << " ";
+          writeLater.push_back(it);
+          break;
+        default:
+          cout << "cannot write " << it->second.which() << endl;
+          break;
+        }
+      }
+
+      for(int i=0;i<writeLater.size();i++){
+        switch(writeLater[i]->second.which()){
+        case SFNODE:
+	  if(get<SFNode>(instance->proto->fields[writeLater[i]->first]) != get<SFNode>(writeLater[i]->second)) {
+	    out << indent << writeLater[i]->first << " ";
+	    if(get<SFNode>(writeLater[i]->second)) writeNodeIter(get<SFNode>(writeLater[i]->second));
+	    else out << "NULL" << std::endl;
+	  }
+          break;
+        case MFNODE:
+	  if(get<MFNode>(instance->proto->fields[writeLater[i]->first]) != get<MFNode>(writeLater[i]->second)) {
+	    out << indent << writeLater[i]->first << " ";
 	    out << "[" << std::endl;
 	    ++indent;
-	    for(int i=0;i<get<MFNode>(it->second).size();i++){
-	      writeNodeIter(get<MFNode>(it->second)[i]);
+	    for(int j=0;j<get<MFNode>(writeLater[i]->second).size();j++){
+	      writeNodeIter(get<MFNode>(writeLater[i]->second)[j]);
 	    }
 	    out << --indent << "]" << std::endl;
 	  }
           break;
         default:
-          cout << "cannot write " << it->second.which() << endl;
+          cout << "cannot write " << writeLater[i]->second.which() << endl;
           break;
         }
       }
