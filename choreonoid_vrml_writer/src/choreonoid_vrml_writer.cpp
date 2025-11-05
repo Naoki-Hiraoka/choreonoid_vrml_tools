@@ -1,12 +1,12 @@
 #include <choreonoid_vrml_writer/choreonoid_vrml_writer.h>
 
-#include <boost/filesystem.hpp>
-#include <iostream>
 #include <cnoid/src/Util/FileUtil.h>
+#include <cnoid/src/Util/UTF8.h>
+#include <cnoid/stdx/filesystem>
+#include <iostream>
 
 using namespace std;
 using namespace cnoid;
-namespace filesystem = boost::filesystem;
 
 
 namespace choreonoid_vrml_writer {
@@ -108,7 +108,7 @@ namespace choreonoid_vrml_writer {
     VRMLWriterNodeMethod2 getNodeMethod(VRMLNodePtr node);
 
     template <class MFValues> void writeMFValues(MFValues values, int numColumn);
-    void writeMFString(MFString values, int numColumn);
+    void writeMFString(MFString values, int numColumn); // ここがdefaultと異なる
     void writeMFInt32(MFInt32& values, int maxColumns = 10);
     void writeMFInt32SeparatedByMinusValue(MFInt32& values, int maxColumns);
     void writeHeader();
@@ -509,13 +509,12 @@ namespace choreonoid_vrml_writer {
   // ここがdefaultと異なる
   std::string VRMLWriterImpl2::reltoabs(std::string& fname)
   {
-    filesystem::path from(fname);
-    if(checkAbsolute(from)) return fname;
+    stdx::filesystem::path from(fname);
+    if(from.is_absolute()) return fname;
 
-    filesystem::path parentPath(ifname);
-    filesystem::path to = parentPath.parent_path() / from;
-    to.normalize();
-    return getAbsolutePathString(to);
+    stdx::filesystem::path parentPath(ifname);
+    stdx::filesystem::path to = parentPath.parent_path() / from;
+    return stdx::filesystem::absolute(to).string();
   }
 
   /**
@@ -524,10 +523,10 @@ namespace choreonoid_vrml_writer {
    **/
   std::string VRMLWriterImpl2::abstorel(std::string& fname)
   {
-    filesystem::path from(ofname);
-    filesystem::path to(fname);
-    filesystem::path::const_iterator fromIter = from.begin();
-    filesystem::path::const_iterator toIter = to.begin();
+    stdx::filesystem::path from(fromUTF8(ofname));
+    stdx::filesystem::path to(fromUTF8(fname));
+    stdx::filesystem::path::const_iterator fromIter = from.begin();
+    stdx::filesystem::path::const_iterator toIter = to.begin();
     
     while(fromIter != from.end() && toIter != to.end() && (*toIter) == (*fromIter)) {
         ++toIter;
@@ -536,7 +535,7 @@ namespace choreonoid_vrml_writer {
     
     if (fromIter != from.end()) ++fromIter;
     
-    filesystem::path finalPath;
+    stdx::filesystem::path finalPath;
     while(fromIter != from.end()) {
         finalPath /= "..";
         ++fromIter;
@@ -545,7 +544,7 @@ namespace choreonoid_vrml_writer {
         finalPath /= *toIter;
         ++toIter;
     }
-    return finalPath.string();
+    return toUTF8(finalPath.string());
   }
 
 
@@ -1225,7 +1224,7 @@ translation IS translation\n\
     if(beginNode(instance->proto->protoName.c_str(), node, true)){
       std::vector<cnoid::VRMLProtoFieldMap::iterator> writeLater; // SFNODEとMFNODEは長いので、一番最後に出力しないと読みにくくなる
       for(cnoid::VRMLProtoFieldMap::iterator it = instance->fields.begin(); it != instance->fields.end(); it++){
-        switch(it->second.which()){
+        switch(it->second.index()){
         case SFBOOL:
 	  if(get<SFBool>(instance->proto->fields[it->first]) != get<SFBool>(it->second)){
 	    out << indent << it->first << " ";
@@ -1332,13 +1331,13 @@ translation IS translation\n\
           writeLater.push_back(it);
           break;
         default:
-          cout << "cannot write " << it->second.which() << endl;
+          cout << "cannot write " << it->second.index() << endl;
           break;
         }
       }
 
       for(int i=0;i<writeLater.size();i++){
-        switch(writeLater[i]->second.which()){
+        switch(writeLater[i]->second.index()){
         case SFNODE:
 	  if(get<SFNode>(instance->proto->fields[writeLater[i]->first]) != get<SFNode>(writeLater[i]->second)) {
 	    out << indent << writeLater[i]->first << " ";
@@ -1358,7 +1357,7 @@ translation IS translation\n\
 	  }
           break;
         default:
-          cout << "cannot write " << writeLater[i]->second.which() << endl;
+          cout << "cannot write " << writeLater[i]->second.index() << endl;
           break;
         }
       }
